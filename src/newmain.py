@@ -13,7 +13,6 @@ from task_configs import get_data, get_config, get_metric, get_optimizer_schedul
 from utils import count_params, count_trainable_params, calculate_stats
 from newEmbedder import get_pretrain_model2D_feature, wrapper1D, wrapper2D, feature_matching_tgt_model,get_src_train_dataset_1Dmodel
 from test_model import get_src_predictor1D
-import wandb
 from datetime import datetime
 from newEmbedder import label_matching_by_entropy, label_matching_by_conditional_entropy
 
@@ -61,26 +60,7 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
     else:
         cudnn.benchmark = True
     ##################################################################################################
-    ##### Init wanDB
-    wandb.login(key= "87a17a462a0003e50590ec537dda9beacbcc2d63")
     
-    wandb.init(
-      # Set the project where this run will be logged
-      project= f"CrossModality_{args.dataset}",
-      # We pass a run name (otherwise it’ll be randomly assigned, like sunshine-lollypop-10)
-      name = (
-    f"experiment_{args.dataset}_id_{str(args.experiment_id)}_"
-    f"CE-{args.C_entropy}_LE-{args.label_epochs}_seed-{args.seed}"),
-      # Track hyperparameters and run metadata
-      config={
-      "optimizer": args.optimizer,
-      "back_bone": args.weight,
-      "target_dataset": args.dataset,
-      "training_epochs": args.epochs,
-      "feature_matching_epochs:": args.embedder_epochs,
-      "Conditional_entropy": args.C_entropy,
-      "label_matching_epochs:": args.label_epochs,
-      })
     
     #################### Load config 
     dims, sample_shape, num_classes, loss, args = get_config(root, args)
@@ -223,14 +203,7 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
             "[train %s %d %.6f] time elapsed: %.4f\ttrain loss: %.4f\tval loss: %.4f\tval score: %.4f\tbest val score: %.4f",
             "full" if ep >= args.predictor_epochs else "predictor",ep,optimizer.param_groups[0]['lr'], train_time[-1], train_loss,
              val_loss, val_score,compare_metrics(train_score))
-            wandb.log({
-            "epoch": ep,
-            "time_elapsed": train_time[-1],
-            "train_loss": train_loss,
-            "val_loss": val_loss,
-            "val_score": val_score,
-            "best_val_score": compare_metrics(train_score)
-            })
+           
             if use_determined :
                 id_current = save_state(use_determined, args, context, tgt_model, optimizer, scheduler, ep, n_train, train_score, train_losses, embedder_stats)
                 try:
@@ -282,7 +255,7 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
             return
 
    
-    wandb.finish()    
+   
 
 
 def train_one_epoch(context, args, model, optimizer, scheduler, loader, loss, temp, decoder=None, transform=None):    
