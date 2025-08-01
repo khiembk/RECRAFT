@@ -59,14 +59,12 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
         cudnn.benchmark = False
     else:
         cudnn.benchmark = True
-    ##################################################################################################
     
     
     #################### Load config 
     dims, sample_shape, num_classes, loss, args = get_config(root, args)
     print("current configs: ", args)
     if load_embedder(use_determined, args):
-        print("Log: Set embedder_epochs = 0")
         args.embedder_epochs = 0
     ####### determind type of backbone
     Roberta = True if len(sample_shape) == 3 else False
@@ -75,17 +73,12 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
     tgt_model = wrapper_func(sample_shape, num_classes, weight=args.weight, train_epoch=args.embedder_epochs, activation=args.activation, target_seq_len=args.target_seq_len, drop_out=args.drop_out)
     tgt_model = tgt_model.to(args.device).train()
     continue_training = check_if_continue_training(args)
-    if continue_training:
-       print("continue training...")
-       print("set model trainable...")
-       set_grad_state(tgt_model.model, True)
-       tgt_model.output_raw = False
-    else:   
-       if Roberta is not True: 
+    
+    if Roberta is not True: 
         print("2D task...")
     ######### config for testing 
         
-        src_num_classes = 10  
+        src_num_classes = 10  # src is cifar10
     ######### get src_model and src_feature
         src_model, src_train_dataset = get_pretrain_model2D_feature(args,root,sample_shape,num_classes,src_num_classes)
     
@@ -94,10 +87,10 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
         del src_train_dataset
     ######### label matching for src_model.
         if args.C_entropy == False:
-            print("Do fast label matching...")
+            
             src_model = label_matching_by_entropy(args,root, src_model, tgt_model.embedder, num_classes, model_type="2D")
         else:
-            print("Do conditional label matching...")
+            
             src_model = label_matching_by_conditional_entropy(args,root, src_model, tgt_model.embedder, num_classes, model_type="2D")    
     ######### fine-tune all tgt_model after feature-label matching.
         print("Init tgt_model backbone by src_model...")
@@ -106,7 +99,7 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
         set_grad_state(tgt_model.model, True)
         set_grad_state(tgt_model.embedder, True)
         
-       else:
+    else:
         print("1D task...")
         #### get source train dataset 
         src_train_dataset = get_src_train_dataset_1Dmodel(args,root)
