@@ -11,7 +11,7 @@ import yaml
 from types import SimpleNamespace
 from task_configs import get_data, get_config, get_metric, get_optimizer_scheduler, set_trainable, set_grad_state
 from utils import count_params, count_trainable_params, calculate_stats
-from newEmbedder import get_pretrain_model2D_feature, wrapper1D, wrapper2D, feature_matching_tgt_model,get_src_train_dataset_1Dmodel
+from newEmbedder import get_pretrain_model2D_feature,get_pretrain_model2D_feature_with_tau, wrapper1D, wrapper2D, feature_matching_tgt_model,get_src_train_dataset_1Dmodel
 from test_model import get_src_predictor1D
 from datetime import datetime
 from newEmbedder import label_matching_by_entropy, label_matching_by_conditional_entropy
@@ -80,7 +80,7 @@ def main(use_determined ,args,info=None, context=None, DatasetRoot= None, log_fo
         
         src_num_classes = 10  # src is cifar10
     ######### get src_model and src_feature
-        src_model, src_train_dataset = get_pretrain_model2D_feature(args,root,sample_shape,num_classes,src_num_classes)
+        src_model, src_train_dataset = get_pretrain_model2D_feature_with_tau(args,root,sample_shape,num_classes,src_num_classes)
     
     ######### feature matching for tgt_model.
         tgt_model = feature_matching_tgt_model(args,root, tgt_model,src_train_dataset)

@@ -421,7 +421,7 @@ def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes,
         if param.requires_grad:
             print(name)
     ############################################################################################
-    for epoch in range(6):
+    for epoch in range(10):
         running_loss = 0.0 
         correct = 0  
         total = 0
@@ -450,7 +450,7 @@ def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes,
     src_model.forward_with_feature = True
     ################################
 
-    for epoch in range(6,20):
+    for epoch in range(10,20):
         running_loss = 0.0 
         running_reg_loss = 0.0  # Track regularizer loss
         correct = 0  
@@ -495,8 +495,34 @@ def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes,
               f'Average Source Loss: {running_loss/len(src_train_loader):.4f}, '
               f'Average Reg Loss: {running_reg_loss/len(src_train_loader):.4f}, '
               f'Accuracy: {accuracy:.2f}%')  
+    
 
-    return src_model
+    ##### set output_raw 
+    src_model.output_raw = True
+    src_model.eval()
+    ##### get source feature from cifar10
+    src_feats = []
+    src_ys = []
+    for i, data in enumerate(src_train_loader):
+            x_, y_ = data 
+            x_ = x_.to(args.device)
+            x_ = transforms.Resize((IMG_SIZE, IMG_SIZE))(x_)
+            out = src_model(x_)
+            if len(out.shape) > 2:
+                out = out.mean(1)
+
+            src_ys.append(y_.detach().cpu())
+            src_feats.append(out.detach().cpu())
+            
+    src_feats = torch.cat(src_feats, 0)
+    src_ys = torch.zeros(len(src_feats), dtype=torch.long)
+    src_train_dataset = torch.utils.data.TensorDataset(src_feats, src_ys)
+    ##### clearn cache
+    del src_ys, src_feats, src_train_loader
+    torch.cuda.empty_cache()
+    src_model.output_raw = False
+    src_model.forward_with_feature = False
+    return src_model, src_train_dataset
 
 
 ##############################################################################################################################################
