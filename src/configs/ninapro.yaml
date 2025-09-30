@@ -12,7 +12,7 @@ hyperparameters:
     experiment_id: 0
     seed: 0
     epochs: 60
-    embedder_epochs: 100
+    embedder_epochs: 60
     predictor_epochs: 0
     finetune_method: all
     drop_out: 0

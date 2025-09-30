@@ -381,7 +381,7 @@ def get_pretrain_model2D_feature(args,root,sample_shape, num_classes, source_cla
 
 
 ###############################################################################################################################################
-def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes, source_classes=10, tau=0.4, rho=100):
+def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes, source_classes=10, tau= 1.0, rho=100):
     ###################################### train predictor 
     """
     Retrain the source prediction head with tau to enforce the assumption
@@ -389,7 +389,7 @@ def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes,
     where z is the output of the embedder
     """
     print("get src_model and src_feature...")
-    src_train_loader, _, _, _, _, _, _ = get_data(root, args.embedder_dataset, args.batch_size, False, maxsize=5000)
+    src_train_loader, _, _, _, _, _, _ = get_data(root, args.embedder_dataset, 4, False, maxsize=5000)
     IMG_SIZE = 224 if args.weight == 'tiny' or args.weight == 'base' else 196
     num_classes = 10
     print("num class: ", num_classes)    
@@ -814,9 +814,7 @@ def label_matching_by_entropy(args,root, src_model, tgt_embedder,num_classes ,sr
          
     set_grad_state(src_model.model,False)
     set_grad_state(src_model.embedder, True)
-    if fronzen_predictor:
-       print("[Label Matching]-Set src predictor frozen...")
-       set_grad_state(src_model.predictor, False)
+    
     ################################################################    
     print("trainabel params count :  ",count_trainable_params(src_model))
     print("trainable params: ")
@@ -850,7 +848,7 @@ def label_matching_by_entropy(args,root, src_model, tgt_embedder,num_classes ,sr
     tgt_train_loaders, tgt_class_weights = load_by_class(tgt_train_loader, num_classes_new)
     
     ####### get optimizer
-    args, src_model, optimizer, scheduler = get_optimizer_scheduler(args, src_model, module=None, n_train=n_train)
+    args, src_model, optimizer, scheduler = get_optimizer_scheduler(args, src_model, module= 'embedder', n_train=n_train)
     optimizer.zero_grad()         
     ####### train with dummy label 
     print("Training with dummy label...")
