@@ -381,7 +381,7 @@ def get_pretrain_model2D_feature(args,root,sample_shape, num_classes, source_cla
 
 
 ###############################################################################################################################################
-def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes, source_classes=10, tau= 1.0, rho=100):
+def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes, source_classes=10, tau= 0.4, rho=100):
     ###################################### train predictor 
     """
     Retrain the source prediction head with tau to enforce the assumption
@@ -493,7 +493,7 @@ def get_pretrain_model2D_feature_with_tau(args, root, sample_shape, num_classes,
         accuracy = 100. * correct / total
         print(f'Epoch [{epoch+1}/{args.embedder_epochs}], '
               f'Average Source Loss: {running_loss/len(src_train_loader):.4f}, '
-              f'Average Reg Loss: {running_reg_loss/len(src_train_loader):.4f}, '
+              f'Average Reg Loss: {running_reg_loss/(len(src_train_loader)*rho):.4f}, '
               f'Accuracy: {accuracy:.2f}%')  
     
 
