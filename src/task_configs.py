@@ -303,7 +303,7 @@ def get_scheduler(name, params, epochs=200, n_train=None):
     return scheduler, lr_sched_iter
 
 
-def get_optimizer_scheduler(args, model, module=None, n_train=1):
+def get_optimizer_scheduler(args, model, module=None, n_train=1, lr = None):
     if module is None:
         
         optimizer = get_optimizer(args.optimizer["name"], args.optimizer["params"])(get_params_to_update(model,""))
@@ -320,6 +320,10 @@ def get_optimizer_scheduler(args, model, module=None, n_train=1):
         embedder_optimizer_params = copy.deepcopy(args.optimizer['params'])
         if embedder_optimizer_params['lr'] <= 0.001:
             embedder_optimizer_params['lr'] *= 10
+
+        if lr is not None: 
+            embedder_optimizer_params['lr'] = lr
+
         embedder_optimizer = get_optimizer(args.optimizer["name"], embedder_optimizer_params)(get_params_to_update(model, ""))
         lr_lambda, _ = get_scheduler(args.no_warmup_scheduler["name"], args.no_warmup_scheduler["params"], args.embedder_epochs, 1)
         embedder_scheduler = torch.optim.lr_scheduler.LambdaLR(embedder_optimizer, lr_lambda=lr_lambda)
