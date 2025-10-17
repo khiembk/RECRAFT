@@ -848,7 +848,7 @@ def label_matching_by_entropy(args,root, src_model, tgt_embedder,num_classes ,sr
     tgt_train_loaders, tgt_class_weights = load_by_class(tgt_train_loader, num_classes_new)
     
     ####### get optimizer
-    args, src_model, optimizer, scheduler = get_optimizer_scheduler(args, src_model, module= 'embedder', n_train=n_train)
+    args, src_model, optimizer, scheduler = get_optimizer_scheduler(args, src_model, module= 'embedder', n_train=n_train, lr= 0.001)
     optimizer.zero_grad()         
     ####### train with dummy label 
     print("Training with dummy label...")
@@ -1076,7 +1076,7 @@ def label_matching_by_conditional_entropy(args,root, src_model, tgt_embedder,num
     tgt_train_loaders, tgt_class_weights = load_by_class(tgt_train_loader, num_classes_new)
     
     ####### get optimizer
-    args, src_model, optimizer, scheduler = get_optimizer_scheduler(args, src_model, module=None, n_train=n_train)
+    args, src_model, optimizer, scheduler = get_optimizer_scheduler(args, src_model, module=None, n_train=n_train, lr= 0.001)
     optimizer.zero_grad()         
     ####### train with dummy label 
     print("Training with dummy label...")
