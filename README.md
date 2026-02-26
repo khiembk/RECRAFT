@@ -3,7 +3,7 @@
 
 Rethinking Cross-Modal Fine-Tuning: Optimizing the Interaction between Feature Alignment and Target Fitting
 
-[![Main Figure](RECRAFT.pdf)]
+![Main Figure](RECRAFT_1.jpg)
 
 ## Overview
 
