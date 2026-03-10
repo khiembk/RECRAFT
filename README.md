@@ -22,7 +22,7 @@ Paper: [Rethinking Cross-Modal Fine-Tuning: Optimizing the Interaction between F
    ```bash
    git clone https://github.com/yourusername/RECRAFT.git
    cd RECRAFT
-2. Set up environment 
+2. Set up the environment 
    ```bash
    ./startup_hook.sh
 
@@ -33,6 +33,12 @@ Paper: [Rethinking Cross-Modal Fine-Tuning: Optimizing the Interaction between F
 2. Run PDEBench baseline
    ```bash
    ./run_PDE.sh   
+
+## Acknowledgement 
+This project leverages the codebase provided by **ORCA**. We thank the authors for their contribution.
+
+* **Repository:** [sjunhongshen/ORCA](https://github.com/sjunhongshen/ORCA)
+
 ## Citation
 
 If you find this work useful, please cite:
